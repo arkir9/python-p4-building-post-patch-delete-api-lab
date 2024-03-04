@@ -45,5 +45,58 @@ def most_expensive_baked_good():
     most_expensive_serialized = most_expensive.to_dict()
     return make_response( most_expensive_serialized,   200  )
 
+@app.route('/baked_goods', methods=['POST'])
+def create_baked_good():
+    # Extract data from the request form
+    name = request.form.get('name')
+    price = request.form.get('price')
+    bakery_id = request.form.get('bakery_id')
+
+    # Check if the bakery ID is provided
+    if not bakery_id:
+        return jsonify({"error": "Bakery ID is required"}), 400
+
+    # Retrieve the bakery from the database
+    bakery = Bakery.query.get(bakery_id)
+    
+    # Check if the bakery exists
+    if not bakery:
+        return jsonify({"error": "Bakery not found"}), 404
+
+    # Create a new BakedGood instance
+    baked_good = BakedGood(name=name, price=price, bakery_id=bakery_id)  # Fix: Assign bakery_id instead of bakery
+
+    # Add the new baked good to the session and commit changes
+    db.session.add(baked_good)
+    db.session.commit()
+
+    # Return the newly created baked good as JSON
+    return jsonify(baked_good.to_dict()), 201
+
+@app.route('/bakeries/<int:id>', methods=['PATCH'])
+def update_bakery(id):
+    bakery = Bakery.query.filter_by(id=id).first()
+    if not bakery:
+        return jsonify({"error": "Bakery not found"}), 404
+
+    data = request.form.to_dict()
+    if 'name' in data:
+        bakery.name = data['name']
+
+    db.session.commit()
+    return jsonify(bakery.to_dict()), 200
+
+
+@app.route('/baked_goods/<int:id>', methods=['DELETE'])
+def delete_baked_good(id):
+    baked_good = BakedGood.query.filter_by(id=id).first()
+    if not baked_good:
+        return jsonify({"error": "BakedGood not found"}), 404
+
+    db.session.delete(baked_good)
+    db.session.commit()
+
+    return jsonify({"message": "BakedGood deleted successfully"}), 200
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

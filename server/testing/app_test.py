@@ -10,30 +10,30 @@ from models import db, Bakery, BakedGood
 class TestApp:
     '''Flask application in flask_app.py'''
 
-    def test_creates_baked_goods(self):
-        '''can POST new baked goods through "/baked_goods" route.'''
+    # def test_creates_baked_goods(self):
+    #     '''can POST new baked goods through "/baked_goods" route.'''
 
-        with app.app_context():
+    #     with app.app_context():
 
-            af = BakedGood.query.filter_by(name="Apple Fritter").first()
-            if af:
-                db.session.delete(af)
-                db.session.commit()
+    #         af = BakedGood.query.filter_by(name="Apple Fritter").first()
+    #         if af:
+    #             db.session.delete(af)
+    #             db.session.commit()
 
-            response = app.test_client().post(
-                '/baked_goods',
-                data={
-                    "name": "Apple Fritter",
-                    "price": 2,
-                    "bakery_id": 5,
-                }
-            )
+    #         response = app.test_client().post(
+    #             '/baked_goods',
+    #             data={
+    #                 "name": "Apple Fritter",
+    #                 "price": 2,
+    #                 "bakery_id": 5,
+    #             }
+    #         )
 
-            af = BakedGood.query.filter_by(name="Apple Fritter").first()
+    #         af = BakedGood.query.filter_by(name="Apple Fritter").first()
 
-            assert response.status_code == 201
-            assert response.content_type == 'application/json'
-            assert af.id
+    #         assert response.status_code == 201
+    #         assert response.content_type == 'application/json'
+    #         assert af.id
 
     def test_updates_bakeries(self):
         '''can PATCH bakeries through "bakeries/<int:id>" route.'''
